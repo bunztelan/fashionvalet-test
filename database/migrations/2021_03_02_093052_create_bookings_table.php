@@ -15,7 +15,8 @@ class CreateBookingsTable extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->integer('driver_id');
+            $table->bigInteger('driver_id')->unsigned()->nullable();
+            $table->foreign('driver_id')->references('id')->on('drivers');
             $table->integer('passenger_id');
             $table->string('state');
             $table->integer('country_id');
