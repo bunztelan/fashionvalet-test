@@ -21,8 +21,11 @@ class DriverFactory extends Factory
      */
     public function definition()
     {
+        $random = array('fvtaxi', 'fvdrive', 'random', 'test',);
         return [
-            //
+            'name' => $this->faker->name,
+            'phone_number' => $this->faker->phoneNumber,
+            'email' => $this->faker->unique()->word() . '.' . $this->faker->randomElement($random) . '@' . $this->faker->freeEmailDomain,
         ];
     }
 }
