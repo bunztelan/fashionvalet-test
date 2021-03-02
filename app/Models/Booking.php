@@ -25,6 +25,17 @@ class Booking extends Model
         'created_at_local',
     ];
 
+    /**
+     * Booking state
+     * 
+     * @var array
+     */
+    public const STATE = [
+        'COMPLETED',
+        'CANCELLED_PASSENGER',
+        'CANCELLED_DRIVER',
+    ];
+
     public function getCreateAtLocalAttribute($value)
     {
         return Carbon::parse($value)->timestamp;
@@ -32,6 +43,6 @@ class Booking extends Model
 
     public function driver()
     {
-        return $this->hasOne(Driver::class, 'id', 'driver_id');
+        return $this->belongsTo(Driver::class, 'driver_id');
     }
 }
