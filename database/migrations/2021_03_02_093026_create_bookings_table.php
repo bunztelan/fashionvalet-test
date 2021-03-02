@@ -15,6 +15,12 @@ class CreateBookingsTable extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+            $table->integer('driver_id');
+            $table->integer('passenger_id');
+            $table->string('state');
+            $table->integer('country_id');
+            $table->double('fare');
+            $table->timestamp('created_at_local');
             $table->timestamps();
         });
     }
