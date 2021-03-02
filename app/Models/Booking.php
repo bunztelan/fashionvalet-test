@@ -5,7 +5,6 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Storage;
 
 class Booking extends Model
 {
@@ -39,10 +38,5 @@ class Booking extends Model
     public function getCreateAtLocalAttribute($value)
     {
         return Carbon::parse($value)->timestamp;
-    }
-
-    public function driver()
-    {
-        return $this->belongsTo(Driver::class, 'driver_id');
     }
 }

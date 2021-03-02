@@ -19,4 +19,10 @@ class Driver extends Model
         'phone_number',
         'email',
     ];
+
+    /** Define relationship one to many with booking models */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'driver_id', 'id');
+    }
 }
