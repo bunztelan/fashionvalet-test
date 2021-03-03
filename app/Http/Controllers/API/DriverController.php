@@ -48,13 +48,12 @@ class DriverController extends Controller
             ->where('state', '!=', 'COMPLETED')->groupBy('driver_id');
 
         $unique_passenger = DB::table('bookings')
-            ->select('driver_id', DB::raw('count(id) as unique_passenger'))
-            ->distinct('passenger_id')
-            ->where('state', '=', 'COMPLETED')->groupBy('driver_id');
+            ->select('driver_id', DB::raw('count(distinct passenger_id) as unique_passenger'))
+            ->where('state', '=', 'COMPLETED')->groupBy('driver_id')->get();
 
 
         return ResponseFormatter::success(
-            $completedRides,
+            $unique_passenger,
             "Report generated"
         );
     }
