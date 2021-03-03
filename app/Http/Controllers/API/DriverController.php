@@ -39,18 +39,24 @@ class DriverController extends Controller
 
     public function getAnswer()
     {
-        //$driver = Driver::whereRaw('email LIKE "%fvtaxi%" or email LIKE "%fvdrive%" ')->get();
-
+        // count completed rides
         $completedRides = DB::table('bookings')
             ->select('driver_id', DB::raw('count(id) as completed_rides'))
             ->where('state', '=', 'COMPLETED')->groupBy('driver_id');
 
+        // count cancelled rides
         $cancelledRides = DB::table('bookings')
             ->select('driver_id', DB::raw('count(id) as cancelled_rides'))
             ->where('state', '!=', 'COMPLETED')->groupBy('driver_id');
 
+        // count unique completed passenger
         $unique_passenger = DB::table('bookings')
             ->select('driver_id', DB::raw('count(distinct passenger_id) as unique_passenger'))
+            ->where('state', '=', 'COMPLETED')->groupBy('driver_id');
+
+        // count total fare 
+        $total_fare = DB::table('bookings')
+            ->select('driver_id', DB::raw('SUM(fare) as total_fare'), DB::raw('SUM(fare)*0.2 as total_commission'))
             ->where('state', '=', 'COMPLETED')->groupBy('driver_id');
 
         $data = DB::table('drivers')
@@ -63,30 +69,14 @@ class DriverController extends Controller
             ->joinSub($unique_passenger, 'unique_passenger', function ($join) {
                 $join->on('drivers.id', '=', 'unique_passenger.driver_id');
             })
-            ->select('id', 'completed_rides', 'cancelled_rides', 'unique_passenger')
-            ->where('completed_rides', '>', 2)
+            ->joinSub($total_fare, 'total_fare', function ($join) {
+                $join->on('drivers.id', '=', 'total_fare.driver_id');
+            })
+            ->select('id', 'completed_rides', 'cancelled_rides', 'unique_passenger', 'total_fare', 'total_commission')
+            ->where('completed_rides', '>', 10)
+            ->where('unique_passenger', '<', 5)
+            ->orderBy('completed_rides', 'DESC')
             ->get();
-
-        // $data = DB::table('drivers')
-        //     ->leftJoin('bookings', function ($join) {
-        //         $join->on('drivers.id', '=', 'bookings.driver_id')->where('bookings.state', '=', "COMPLETED");
-        //     })
-        //     ->select('drivers.id', DB::raw('count(*)'))
-        //     ->get();
-        // ->select('id',DB::table('users'))
-        // ->where(function ($query) {
-        //     $query->where('drivers.email', 'LIKE', '%fvtaxi%')
-        //         ->orWhere('drivers.email', 'LIKE', '%fvdrive%');
-        // })
-        // ->leftJoin(DB::raw("(SELECT COUNT(*) AS number_of_completed_rides FROM bookings b WHERE b.state = 'COMPLETED' GROUP BY b.driver_id)")
-        // // ->leftJoin(DB::raw("(SELECT b.driver_id, COUNT(*) AS number_of_cancelled_rides FROM bookings b WHERE b.state LIKE 'CANCELLED%' GROUP BY b.driver_id) cancelled_bookings"), 'drivers.id', '=', 'cancelled_bookings.driver_id')
-        // // ->leftJoin(DB::raw("(SELECT c.driver_id, COUNT(*) AS number_of_unique_passengers FROM (SELECT b.driver_id, b.passenger_id FROM bookings b WHERE b.state = 'COMPLETED' GROUP BY b.driver_id, b.passenger_id) c GROUP BY c.driver_id) unique_passengers"), 'drivers.driver_id', '=', 'unique_passengers.driver_id')
-        // // ->leftJoin(DB::raw("(SELECT b.driver_id, SUM(b.fare) AS total_fare FROM bookings b WHERE b.state = 'COMPLETED' GROUP BY b.driver_id) completed_fare"), 'drivers.driver_id', '=', 'completed_fare.driver_id')
-        // // ->selectRaw('drivers.driver_id AS driver_id, COALESCE(number_of_completed_rides, 0) AS number_of_completed_rides, COALESCE(number_of_cancelled_rides, 0) AS number_of_cancelled_rides, COALESCE(number_of_unique_passengers, 0) AS number_of_unique_passengers, COALESCE(total_fare, 0) AS total_fare, COALESCE(total_fare * 0.2, 0) AS total_commission')
-        // ->where('number_of_completed_rides', '>', 10)
-        // ->where('number_of_unique_passengers', '<', 5)
-        // ->orderBy('number_of_completed_rides', 'DESC')
-        // ->get();
 
         return ResponseFormatter::success(
             $data,
