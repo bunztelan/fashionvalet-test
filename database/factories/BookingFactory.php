@@ -22,7 +22,7 @@ class BookingFactory extends Factory
     public function definition()
     {
         return [
-            'passenger_id' => $this->faker->numberBetween(1, 10),
+            'passenger_id' => $this->faker->numberBetween(1, 3),
             'state' => $this->faker->randomElement(Booking::STATE),
             'country_id' => $this->faker->numberBetween(1, 10),
             'fare' => $this->faker->randomFloat(2, 1, 100),
