@@ -62,18 +62,21 @@ class AddressController extends Controller
     function formatAddress($addresses)
     {
         $formattedAddress = ['', '', ''];
-        $arrayAddress = explode(" ", $addresses);
+        $arrayAddress = array_filter(explode(" ", $addresses));
         $index = 1;
         $addressIndex = 0;
         $next = $arrayAddress[$index];
+        //        Business Office, Malcolm Long 92911 
         foreach ($arrayAddress as $address) {
             $formattedAddress[$addressIndex] .= $address;
+
             // + 1 because we need to seperate the word with space
-            if ((strlen($formattedAddress[$addressIndex]) + strlen($next)) > 30) {
+            if ((strlen($formattedAddress[$addressIndex]) + 1 + strlen($next)) > 30 || ((count($arrayAddress)) - $index) < 3) {
                 $addressIndex++;
             } else {
                 $formattedAddress[$addressIndex] .= " ";
             }
+
             // check for the end of array
             if ($index + 1 < count($arrayAddress)) {
                 $index++;
