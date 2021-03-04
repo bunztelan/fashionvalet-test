@@ -58,6 +58,7 @@ class AddressController extends Controller
             );
         }
 
+        // generate formatted address
         return ResponseFormatter::success(
             $this->formatAddress($address),
             "Address formatted"
@@ -93,9 +94,6 @@ class AddressController extends Controller
             }
 
             $formattedAddress[$addressIndex] .= " ";
-
-
-
 
             // check for the end of array
             if ($index + 1 < count($arrayAddress)) {
