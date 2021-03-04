@@ -20,7 +20,7 @@ For Answer no 1 : you can check it with this [link](https://docs.google.com/docu
 
 you can access API for question no 2 with :
 
-[GET] /api/question2
+[GET] /api/driver/report
 
 ## Answer no 3
 
