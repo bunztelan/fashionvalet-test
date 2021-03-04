@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\API\DriverController;
+use App\Http\Controllers\API\AddressController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('driver', [DriverController::class, 'all']);
+Route::get('driver/report', [DriverController::class, 'getAnswer']);
+Route::post('address/check', [AddressController::class, 'submitAddress']);
