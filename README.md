@@ -26,6 +26,7 @@ you can access API for question no 2 with :
 
 you can access API for question no 3 with :
 
+```
 [POST] /api/address/check
 [BODY]
 {
@@ -33,6 +34,7 @@ you can access API for question no 3 with :
 "address_2":"",
 "address_3":"",
 }
+```
 
 ### Premium Partners
 
