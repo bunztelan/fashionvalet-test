@@ -21,18 +21,21 @@ class AddressController extends Controller
             return ResponseFormatter::error(
                 null,
                 "Please insert address",
-                403
+                400
             );
         }
-        // validate if all input is exist and each not more than 30
-        if ($this->validateAddress($address_1) && $this->validateAddress($address_2) && $this->validateAddress($address_3)) {
+        // validate if all input is already meet DHL standard
+        if (
+            $this->validateAddress($address_1) &&
+            $this->validateAddress($address_2) &&
+            $this->validateAddress($address_3)
+        ) {
             return ResponseFormatter::success(
                 null,
                 "Address is correct",
             );
         }
 
-        // validate one of the address is empty
         // combine all addresses separated with space 
         $address = $address_1 . " " . $address_2 . " " . $address_3;
         //validate if combined address have more than 90 char
@@ -40,6 +43,17 @@ class AddressController extends Controller
             return ResponseFormatter::error(
                 $address,
                 "exceed address maximum length",
+                400,
+            );
+        }
+        /**
+         * validate at least combined address have minimum 3 words,
+         * because every address need to be filled by at least 1 word
+         */
+        if (count(array_filter(explode(" ", $address))) < 3) {
+            return ResponseFormatter::error(
+                $address,
+                "Address at least have 3 words",
                 400,
             );
         }
@@ -66,16 +80,22 @@ class AddressController extends Controller
         $index = 1;
         $addressIndex = 0;
         $next = $arrayAddress[$index];
-        //        Business Office, Malcolm Long 92911 
-        foreach ($arrayAddress as $address) {
-            $formattedAddress[$addressIndex] .= $address;
 
-            // + 1 because we need to seperate the word with space
-            if ((strlen($formattedAddress[$addressIndex]) + 1 + strlen($next)) > 30 || ((count($arrayAddress)) - $index) < 3) {
+        foreach ($arrayAddress as $address) {
+
+            $formattedAddress[$addressIndex] .= $address;
+            // + 1 because we need to seperate the word with space and check for max length
+            if ((strlen($formattedAddress[$addressIndex]) + 1 + strlen($next)) > 30 ||
+                (((count($arrayAddress)) - $index) < 3 && strlen($formattedAddress[1]) < 1) ||
+                (((count($arrayAddress)) - $index) < 3 && strlen($formattedAddress[2]) < 1)
+            ) {
                 $addressIndex++;
-            } else {
-                $formattedAddress[$addressIndex] .= " ";
             }
+
+            $formattedAddress[$addressIndex] .= " ";
+
+
+
 
             // check for the end of array
             if ($index + 1 < count($arrayAddress)) {
